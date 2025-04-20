@@ -1,5 +1,6 @@
 ﻿using JwtAuthenticationProject.Entities;
 using JwtAuthenticationProject.Models;
+using JwtProject.Models;
 using JwtProject.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,19 +30,40 @@ namespace JwtAuthenticationProject.Controllers
 
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
         {
-            var token = await authService.LoginAsync(request);
-            if (token is null)
+            var result = await authService.LoginAsync(request);
+            if (result is null)
                 return BadRequest("Invalid Username or Password");
 
-            return Ok(token);
+            return Ok(result);
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var result = await authService.RefreshTokensAsync(request);
+            if (result is null || result.AccessToken is null || result.RefreshToken is null)
+                return Unauthorized("Invalid refresh Token");
+
+            return Ok(result);
+        }
+
+
         [Authorize]
         [HttpGet]
         public IActionResult AuthenticatedOnlyEndpoint()
         {
             return Ok("You are authenticated!");
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        public IActionResult AAdminOnlyEndpoint()
+        {
+            return Ok("You are an admin!");
         }
     }
 }
