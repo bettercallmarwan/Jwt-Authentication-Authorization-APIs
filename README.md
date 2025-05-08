@@ -1,4 +1,4 @@
-# JWT Authentication & Authorization API
+# JWT Authentication & Authorization APIs
 
 A simple .NET-based API implementing JWT (JSON Web Token) authentication and authorization.  
 This project demonstrates secure user registration, login, and role-based access control using ASP.NET Core.
